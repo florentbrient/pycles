@@ -3,7 +3,7 @@ import json
 import pprint
 from sys import exit
 import uuid
-
+#florent
 
 def main():
     parser = argparse.ArgumentParser(prog='Namelist Generator')
