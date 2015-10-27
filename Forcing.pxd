@@ -23,6 +23,21 @@ cdef class ForcingNone:
                  PrognosticVariables.PrognosticVariables PV, DiagnosticVariables.DiagnosticVariables DV,
                    NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa)
 
+cdef class ForcingVARF:
+    cdef:
+        double [:] ug
+        double [:] vg
+        double [:] dtdt
+        double [:] dqtdt
+        double [:] subsidence
+        double coriolis_param
+    cpdef initialize(self, Grid.Grid Gr, NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa)
+    cpdef update(self, Grid.Grid Gr, ReferenceState.ReferenceState Ref,
+                 PrognosticVariables.PrognosticVariables PV, DiagnosticVariables.DiagnosticVariables DV, ParallelMPI.ParallelMPI Pa)
+    cpdef stats_io(self, Grid.Grid Gr, ReferenceState.ReferenceState Ref,
+                 PrognosticVariables.PrognosticVariables PV, DiagnosticVariables.DiagnosticVariables DV,
+                   NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa)
+
 cdef class ForcingBomex:
     cdef:
         double [:] ug
