@@ -20,6 +20,8 @@ def main():
         namelist = SullivanPatton()
     elif case_name == 'Bomex':
         namelist = Bomex()
+    elif case_name == 'VARF':
+        namelist = VARF()
     elif case_name == 'Gabls':
         namelist = Gabls()
     elif case_name == 'DYCOMS_RF01':
@@ -340,6 +342,88 @@ def Bomex():
 
     return namelist
 
+
+def VARF():
+
+    namelist = {}
+
+    namelist['grid'] = {}
+    namelist['grid']['dims'] = 3
+    namelist['grid']['nx'] = 64
+    namelist['grid']['ny'] = 64
+    namelist['grid']['nz'] = 75
+    namelist['grid']['gw'] = 7
+    namelist['grid']['dx'] = 100.0
+    namelist['grid']['dy'] = 100.0
+    namelist['grid']['dz'] = 100 / 2.5
+
+    namelist['mpi'] = {}
+    namelist['mpi']['nprocx'] = 4
+    namelist['mpi']['nprocy'] = 4
+    namelist['mpi']['nprocz'] = 1
+
+    namelist['time_stepping'] = {}
+    namelist['time_stepping']['ts_type'] = 3
+    namelist['time_stepping']['cfl_limit'] = 0.7
+    namelist['time_stepping']['dt_initial'] = 10.0
+    namelist['time_stepping']['dt_max'] = 10.0
+    namelist['time_stepping']['t_max'] = 64800.0
+
+    namelist['thermodynamics'] = {}
+    namelist['thermodynamics']['latentheat'] = 'constant'
+
+    namelist['microphysics'] = {}
+    namelist['microphysics']['scheme'] = 'None_SA'
+    namelist['microphysics']['phase_partitioning'] = 'liquid_only'
+
+    namelist['sgs'] = {}
+    namelist['sgs']['scheme'] = 'Smagorinsky'
+
+    namelist['diffusion'] = {}
+    namelist['diffusion']['qt_entropy_source'] = False
+
+    namelist['momentum_transport'] = {}
+    namelist['momentum_transport']['order'] = 7
+
+    namelist['scalar_transport'] = {}
+    namelist['scalar_transport']['order'] = 7
+
+    namelist['damping'] = {}
+    namelist['damping']['scheme'] = 'Rayleigh'
+    namelist['damping']['Rayleigh'] = {}
+    namelist['damping']['Rayleigh']['gamma_r'] = 0.2
+    namelist['damping']['Rayleigh']['z_d'] = 600
+
+    namelist['output'] = {}
+    namelist['output']['output_root'] = './'
+
+    namelist['restart'] = {}
+    namelist['restart']['output'] = True
+    namelist['restart']['init_from'] = False
+    namelist['restart']['input_path'] = './'
+    namelist['restart']['frequency'] = 600.0
+
+    namelist['stats_io'] = {}
+    namelist['stats_io']['stats_dir'] = 'stats'
+    namelist['stats_io']['auxiliary'] = 'Cumulus'
+    namelist['stats_io']['frequency'] = 100.0
+
+    namelist['fields_io'] = {}
+    namelist['fields_io']['fields_dir'] = 'fields'
+    namelist['fields_io']['frequency'] = 1800.0
+    namelist['fields_io']['diagnostic_fields'] = ['ql','temperature','buoyancy_frequency','viscosity']
+
+    namelist['meta'] = {}
+    namelist['meta']['simname'] = 'VARF'
+    namelist['meta']['casename'] = 'VARF'
+    
+    namelist['thermo'] = {}
+    namelist['thermo']['theta_surface'] = 297.1   # 301.1    # 299.1
+    namelist['thermo']['theta_flux']    = 7.6e-3  # 8.4e-3   # 8.0e-3 
+    namelist['thermo']['qt_flux']       = 5.67e-5 # 4.73e-5  # 5.2e-5
+    namelist['thermo']['qt_surface']    = 19.307  # 25.59e-3 # 22.45e-3
+
+    return namelist
 
 def Gabls():
 
