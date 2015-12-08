@@ -4,6 +4,7 @@ try:
     import cPickle as pickle
 except:
     import pickle as pickle # for Python 3 users
+
 cimport ParallelMPI
 
 cdef class Restart:
@@ -63,9 +64,24 @@ cdef class Restart:
 
 
     cpdef write(self, ParallelMPI.ParallelMPI Pa):
+
         self.restart_data['last_restart_time'] = self.last_restart_time
-        with open(self.restart_path + '/' + str(Pa.rank) + '.pkl', 'wb') as f:
-            pickle.dump(self.restart_data,f,protocol=2)
+
+        #Set up path for writing restar files
+        path = self.restart_path + '/' + str(np.int(self.last_restart_time))
+
+        if Pa.rank == 0:
+            if os.path.exists(path):
+                Pa.root_print("Restart path exits for safety not overwriting.")
+                self.free_memory()
+                return
+            else:
+                Pa.root_print("Creating directory: " +  path + " for restart files.")
+                os.mkdir(path)
+        Pa.barrier()
+
+        with open(path+ '/' + str(Pa.rank) + '.pkl', 'wb') as f:
+            pickle.dump(self.restart_data, f,protocol=2)
 
         # No point keeping data in dictionary so empty it now
         self.free_memory()
@@ -82,7 +98,7 @@ cdef class Restart:
 
     cpdef free_memory(self):
         '''
-        Free memoery associated with restart_data dictionary.
+        Free memory associated with restart_data dictionary.
         :return:
         '''
 
