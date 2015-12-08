@@ -90,9 +90,6 @@ cdef class ForcingDyCOMS_RF01:
     cpdef stats_io(self, Grid.Grid Gr, ReferenceState.ReferenceState Ref,
                  PrognosticVariables.PrognosticVariables PV, DiagnosticVariables.DiagnosticVariables DV,
                    NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa)
-<<<<<<< HEAD
-=======
-
 
 cdef class ForcingRico:
     cdef:
@@ -109,4 +106,3 @@ cdef class ForcingRico:
     cpdef stats_io(self, Grid.Grid Gr, ReferenceState.ReferenceState Ref,
                  PrognosticVariables.PrognosticVariables PV, DiagnosticVariables.DiagnosticVariables DV,
                    NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa)
->>>>>>> upstream/master
