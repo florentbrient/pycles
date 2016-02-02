@@ -1,0 +1,22 @@
+#!python
+#cython: boundscheck=False
+#cython: wraparound=False
+#cython: initializedcheck=False
+#cython: cdivision=True
+
+cimport Grid
+cimport PrognosticVariables
+cimport DiagnosticVariables
+cimport Kinematics
+cimport ParallelMPI
+from NetCDFIO cimport NetCDFIO_Stats
+cimport numpy as np
+import numpy as np
+import cython
+
+import numpy as np
+cimport numpy as np
+from libc.math cimport pow, cbrt, exp
+include 'parameters.pxi'
+
+

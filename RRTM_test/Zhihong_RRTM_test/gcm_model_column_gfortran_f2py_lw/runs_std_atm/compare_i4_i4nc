@@ -1,0 +1,10 @@
+#!/bin/csh -f
+set echo
+rm INPUT_RRTM OUTPUT_RRTM OUTPUT_RRTM_i4
+#ln -s input_rrtm_MLS-clr-aer12 INPUT_RRTM
+ln -s input_rrtm_MLS-cld-imca1 INPUT_RRTM
+../build/rrtmg_lw_v4.85_tanzh_i4 
+mv OUTPUT_RRTM OUTPUT_RRTM_i4
+../build/rrtmg_lw_v4.85_tanzh_i4nc
+mv OUTPUT_RRTM OUTPUT_RRTM
+diff OUTPUT_RRTM_i4 OUTPUT_RRTM

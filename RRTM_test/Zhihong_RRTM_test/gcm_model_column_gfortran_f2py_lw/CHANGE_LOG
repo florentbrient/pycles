@@ -1,0 +1,53 @@
+CHANGE FROM ORIGINAL RRTMG_LW (gcm_model)
+1. Removing all reference to _im and _rb (which is not supported by f2py), i.e.
+1.1. Changing all '_im' to '_4' (using 4-byte integer);
+1.2. Changing all '_rb' to '_8' (using 8-byte real);
+1.3. Removing all reference to 'parkind' module.
+
+2. Assumed output dimension is not supported by f2py.
+2.1. The dimension in the following files needs to be specified:
+     rrtmg_lw_cldprmc.f90, rrtmg_lw_cldprop.f90, rrtmg_lw_rtrn.f90, rrtmg_lw_rtrnmc.f90
+     rrtmg_lw_rtrnmr.f90, rrtmg_lw_setcoef.f90, rrtmg_lw_taumol.f90, 
+     rrtmg_lw_rad.nomcica.f90:rrtmg_lw_rad and inatm subroutines.
+2.2. Note that the number of layers is sometimes implied in f2py. One specific problem is
+     in the rrtmg_lw_rad module, where one ghost layer is placed at TOA but never gets
+     initialized. This results in some erroneous results. Therefore, the 'nlay+1' in the
+     Local variables (from line 315 to 412) need to be changed to 'nlay'.
+
+3. Adding the driver to mimic the column version (for validation):
+3.1. read_input.f90: the same as the 'readprof' subroutine in rrtmg_lw.1col.f90 with extra 
+     input of 'ncol'. 
+3.2. rrtmg_lw_test.f90: main program, wrapper for rrtmg_lw_rad module:
+     First initialize and call read_input, then convert to rrtmg_lw_rad compatible format, 
+     and output with the same format as the column version.
+3.3. The input files are taken as arguments for rrtmg_lw_test.
+
+4. Adding the makefiles, Use the make_rrtmg_lw_OS_X_g95 as the sample, and change:
+4.1. NETCDF directories; FC command; and the options for FC: note that all real-4 is 
+     promoted to real-8 with the command '-freal-4-real-8'. 
+4.2. The driver directory and the corresponding files (read_input and rrtmg_lw_test) are
+     added to the makefile. 
+     
+COMPILATION STEPS for stand-alone tests:
+1. Load gfortran (use 'module load' on EULER, or use 'sudo port select --set gcc mp-gcc48' 
+   on Desktop iMac);
+2. Enter directory 'build', and do 'make -f make.tanzh_i4';
+3. Enter run_std_atm directory and run tests.
+
+COMPILATION STEPS for f2py:
+1. Write makefile-like script for f2py (use f2py-2.7 -h and -c, including -f90flags, 
+   --f90exec, -f77exec, --opt, -I, -L, -l as needed
+2. Change the following files to remove the '_8' specification for parameters: 
+   rrlw_tbl.f90, rrtmg_lw_cldprmc.f90, rrtmg_lw_cldprop.f90, rrtmg_lw_init.f90, 
+   rrtmg_lw_rad.nomcica.f90 (inatm subroutine).
+3. Run the script. Output will be 'rrtmg_lw.so' under the f2py directory.
+
+CAVEATS: 
+1. I haven't tested the -03 option for the compiler (now it is only -O0).
+2. The mcica (random cloud generator) is not implemented yet.
+3. The number density of molecules is slightly different between the converted values
+   in the rrtmg_lw_rad module (and its inatm subroutine) and the direct input from the 
+   input files. This accounts for the slight differences in radiative fluxes and heating
+   rates between the sample output files and the output from this modified version.
+4. By making change #2.2, I'm disabling the capability for a ghost layer at TOA (c.f. 
+   inatm subroutine).
