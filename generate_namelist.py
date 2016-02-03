@@ -109,6 +109,11 @@ def SullivanPatton():
     namelist['fields_io']['frequency'] = 1800.0
     namelist['fields_io']['diagnostic_fields'] = ['temperature','buoyancy_frequency','viscosity']
 
+    namelist['conditional_stats'] ={}
+    namelist['conditional_stats']['classes'] = ['Spectra']
+    namelist['conditional_stats']['frequency'] = 600.0
+    namelist['conditional_stats']['stats_dir'] = 'cond_stats'
+
     namelist['meta'] = {}
     namelist['meta']['simname'] = 'SullivanPatton'
     namelist['meta']['casename'] = 'SullivanPatton'
@@ -340,6 +345,11 @@ def Bomex():
     namelist['fields_io']['frequency'] = 1800.0
     namelist['fields_io']['diagnostic_fields'] = ['ql','temperature','buoyancy_frequency','viscosity']
 
+    namelist['conditional_stats'] ={}
+    namelist['conditional_stats']['classes'] = ['Spectra']
+    namelist['conditional_stats']['frequency'] = 600.0
+    namelist['conditional_stats']['stats_dir'] = 'cond_stats'
+
     namelist['meta'] = {}
     namelist['meta']['simname'] = 'Bomex'
     namelist['meta']['casename'] = 'Bomex'
@@ -502,6 +512,11 @@ def Gabls():
     namelist['fields_io']['frequency'] = 1800.0
     namelist['fields_io']['diagnostic_fields'] = ['temperature','buoyancy_frequency','viscosity']
 
+    namelist['conditional_stats'] ={}
+    namelist['conditional_stats']['classes'] = ['Spectra']
+    namelist['conditional_stats']['frequency'] = 600.0
+    namelist['conditional_stats']['stats_dir'] = 'cond_stats'
+
     namelist['meta'] = {}
     namelist['meta']['simname'] = 'Gabls'
     namelist['meta']['casename'] = 'Gabls'
@@ -572,7 +587,7 @@ def DYCOMS_RF01():
 
     namelist['stats_io'] = {}
     namelist['stats_io']['stats_dir'] = 'stats'
-    namelist['stats_io']['auxiliary'] = ['DYCOMS']
+    namelist['stats_io']['auxiliary'] = ['DYCOMS', 'Flux']
     namelist['stats_io']['frequency'] = 60.0
 
     namelist['fields_io'] = {}
@@ -580,8 +595,14 @@ def DYCOMS_RF01():
     namelist['fields_io']['frequency'] = 3600.0
     namelist['fields_io']['diagnostic_fields'] = ['ql','temperature','buoyancy_frequency','viscosity']
 
+    namelist['conditional_stats'] ={}
+    namelist['conditional_stats']['classes'] = ['Spectra']
+    namelist['conditional_stats']['frequency'] = 600.0
+    namelist['conditional_stats']['stats_dir'] = 'cond_stats'
+
+
     namelist['visualization'] = {}
-    namelist['visualization']['frequency'] = 10.0
+    namelist['visualization']['frequency'] = 1e6
 
     namelist['meta'] = {}
     namelist['meta']['simname'] = 'DYCOMS_RF01'
@@ -613,7 +634,7 @@ def DYCOMS_RF02():
     namelist['time_stepping']['cfl_limit'] = 0.7
     namelist['time_stepping']['dt_initial'] = 1.0
     namelist['time_stepping']['dt_max'] = 10.0
-    namelist['time_stepping']['t_max'] = 4.0 * 3600.0
+    namelist['time_stepping']['t_max'] = 6.0 * 3600.0
 
     namelist['thermodynamics'] = {}
     namelist['thermodynamics']['latentheat'] = 'constant'
@@ -653,7 +674,7 @@ def DYCOMS_RF02():
 
     namelist['stats_io'] = {}
     namelist['stats_io']['stats_dir'] = 'stats'
-    namelist['stats_io']['auxiliary'] = ['DYCOMS']
+    namelist['stats_io']['auxiliary'] = ['DYCOMS', 'Flux']
     namelist['stats_io']['frequency'] = 60.0
 
     namelist['fields_io'] = {}
@@ -662,7 +683,13 @@ def DYCOMS_RF02():
     namelist['fields_io']['diagnostic_fields'] = ['ql','temperature','buoyancy_frequency','viscosity']
 
     namelist['visualization'] = {}
-    namelist['visualization']['frequency'] = 10.0
+    namelist['visualization']['frequency'] = 1e6
+
+    namelist['conditional_stats'] ={}
+    namelist['conditional_stats']['classes'] = ['Spectra']
+    namelist['conditional_stats']['frequency'] = 600.0
+    namelist['conditional_stats']['stats_dir'] = 'cond_stats'
+
 
     namelist['meta'] = {}
     namelist['meta']['simname'] = 'DYCOMS_RF02'
@@ -749,6 +776,11 @@ def SMOKE():
     namelist['fields_io']['fields_dir'] = 'fields'
     namelist['fields_io']['frequency'] = 3600.0
     namelist['fields_io']['diagnostic_fields'] = ['ql','temperature','buoyancy_frequency','viscosity']
+
+    namelist['conditional_stats'] ={}
+    namelist['conditional_stats']['classes'] = ['Spectra']
+    namelist['conditional_stats']['frequency'] = 600.0
+    namelist['conditional_stats']['stats_dir'] = 'cond_stats'
 
     namelist['meta'] = {}
     namelist['meta']['simname'] = 'SMOKE'
@@ -838,6 +870,12 @@ def Rico():
     namelist['restart']['init_from'] = False
     namelist['restart']['input_path'] = './'
     namelist['restart']['frequency'] = 600.0
+
+    namelist['conditional_stats'] ={}
+    namelist['conditional_stats']['classes'] = ['Spectra']
+    namelist['conditional_stats']['frequency'] = 600.0
+    namelist['conditional_stats']['stats_dir'] = 'cond_stats'
+
 
     return namelist
 
