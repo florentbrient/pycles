@@ -76,7 +76,6 @@ cdef class ForcingNone:
                  NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa):
         return
 
-
 cdef class ForcingVARF:
     def __init__(self):
         return
@@ -238,7 +237,6 @@ cdef class ForcingVARF:
         NS.write_profile('v_coriolis_tendency',mean_tendency_2[Gr.dims.gw:-Gr.dims.gw],Pa)
 
         return
-
 
 
 cdef class ForcingBomex:

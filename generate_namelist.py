@@ -419,7 +419,7 @@ def VARF():
 
     namelist['stats_io'] = {}
     namelist['stats_io']['stats_dir'] = 'stats'
-    namelist['stats_io']['auxiliary'] = 'Cumulus'
+    namelist['stats_io']['auxiliary'] = ['Cumulus','TKE','Flux']
     namelist['stats_io']['frequency'] = 100.0
 
     namelist['fields_io'] = {}
@@ -427,13 +427,18 @@ def VARF():
     namelist['fields_io']['frequency'] = 1800.0
     namelist['fields_io']['diagnostic_fields'] = ['ql','temperature','buoyancy_frequency','viscosity']
 
+    namelist['conditional_stats'] ={}
+    namelist['conditional_stats']['classes'] = ['Spectra']
+    namelist['conditional_stats']['frequency'] = 600.0
+    namelist['conditional_stats']['stats_dir'] = 'cond_stats'
+    
     namelist['meta'] = {}
     namelist['meta']['simname'] = 'VARF'
     namelist['meta']['casename'] = 'VARF'
     
     namelist['thermo'] = {}
     namelist['thermo']['theta_surface'] = 299.1 #297.1   # 301.1    # 299.1
-    namelist['thermo']['theta_flux']    = 10.0e-3 #7.6e-3  # 8.4e-3   # 8.0e-3 
+    namelist['thermo']['theta_flux']    = 8.0e-3 #7.6e-3  # 8.4e-3   # 8.0e-3 
     namelist['thermo']['qt_flux']       = 5.2e-5 #5.67e-5 # 4.73e-5  # 5.2e-5
     namelist['thermo']['qt_surface']    = 22.45e-3 #19.307  # 25.59e-3 # 22.45e-3
 
