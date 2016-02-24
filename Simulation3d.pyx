@@ -26,6 +26,7 @@ cimport VisualizationOutput
 cimport Surface
 cimport Forcing
 cimport Radiation
+cimport Radiation2
 cimport Restart
 
 class Simulation3d:
@@ -51,7 +52,8 @@ class Simulation3d:
         self.Ref = ReferenceState.ReferenceState(self.Gr)
         self.Sur = Surface.Surface(namelist, self.LH, self.Pa)
         self.Fo = Forcing.Forcing(namelist, self.Pa)
-        self.Ra = Radiation.Radiation(namelist, self.Pa)
+        self.Ra  = Radiation.Radiation(namelist, self.Pa)
+        self.Ra2 = Radiation2.Radiation2(namelist, self.Pa)
         self.StatsIO = NetCDFIO.NetCDFIO_Stats()
         self.FieldsIO = NetCDFIO.NetCDFIO_Fields()
         self.CondStatsIO = NetCDFIO.NetCDFIO_CondStats()
@@ -120,6 +122,7 @@ class Simulation3d:
 
         self.Fo.initialize(self.Gr, self.StatsIO, self.Pa)
         self.Ra.initialize(self.Gr, self.StatsIO,self.Pa)
+        self.Ra2.initialize(self.Gr, self.StatsIO,self.Pa)
         self.Pr.initialize(namelist, self.Gr, self.Ref, self.DV, self.Pa)
         self.DV.initialize(self.Gr, self.StatsIO, self.Pa)
         self.Damping.initialize(self.Gr)
