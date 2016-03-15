@@ -37,6 +37,8 @@ cdef class Forcing:
             self.scheme = ForcingNone()
         elif casename == 'Rico':
             self.scheme = ForcingRico()
+        elif casename == 'StableBubble':
+            self.scheme = ForcingNone()
         elif casename == 'VARRico':
             self.scheme = ForcingRico()
         else:

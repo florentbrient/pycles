@@ -183,6 +183,8 @@ def SaturatedBubble():
     namelist['restart']['input_path'] = './'
     namelist['restart']['frequency'] = 600.0
 
+    namelist['conditional_stats'] = {}
+
     namelist['stats_io'] = {}
     namelist['stats_io']['stats_dir'] = 'stats'
     namelist['stats_io']['auxiliary'] = ['None']
@@ -259,6 +261,8 @@ def StableBubble():
     namelist['restart']['init_from'] = False
     namelist['restart']['input_path'] = './'
     namelist['restart']['frequency'] = 600.0
+
+    namelist['conditional_stats'] = {} 
 
     namelist['stats_io'] = {}
     namelist['stats_io']['stats_dir'] = 'stats'
