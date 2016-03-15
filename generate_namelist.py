@@ -355,6 +355,9 @@ def Bomex():
     namelist['meta'] = {}
     namelist['meta']['simname'] = 'Bomex'
     namelist['meta']['casename'] = 'Bomex'
+    
+    namelist['radiation'] = {}
+    namelist['radiation']['name'] = 'RRTM'
 
     return namelist
 

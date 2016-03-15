@@ -14,7 +14,10 @@ cimport ParallelMPI
 
 import numpy as np
 cimport numpy as np
+import sys
+import netCDF4 as nc
 from libc.math cimport pow, cbrt, exp
+from thermodynamic_functions import exner, cpm
 include 'parameters.pxi'
 
 from mpi4py import MPI
@@ -45,17 +48,16 @@ cdef extern:
              double *swuflx  ,double *swdflx  ,double *swhr    ,double *swuflxc ,double *swdflxc ,double *swhrc)
 
 
-cdef class Radiation2:
+cdef class Radiation_RRTM:
     def __init__(self, namelist, ParallelMPI.ParallelMPI Pa):
-        casename = namelist['meta']['casename']
+        casename = namelist['radiation']['name']
         if casename == 'RRTM':
             self.scheme = RadiationRRTM()
-        else:
-            self.scheme = RadiationNone()
         return
         
-    cpdef initialize(self, Grid.Grid Gr, NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa):
-        self.scheme.initialize(Gr, NS, Pa)
+    cpdef initialize(self,case_dict,Grid.Grid Gr, ReferenceState.ReferenceState Ref,
+                     NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa):
+        self.scheme.initialize(case_dict, Gr, Ref, NS, Pa)
         return
 
     cpdef update(self, Grid.Grid Gr, ReferenceState.ReferenceState Ref,
@@ -70,23 +72,8 @@ cdef class Radiation2:
         self.scheme.stats_io(Gr, PV, DV, NS, Pa)
         return
         
-cdef class RadiationNone:
-    def __init__(self):
-        return
-    cpdef initialize(self, Grid.Grid Gr, NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa):
-        return
-    cpdef update(self, Grid.Grid Gr, ReferenceState.ReferenceState Ref,
-                 PrognosticVariables.PrognosticVariables PV, DiagnosticVariables.DiagnosticVariables DV,
-                 ParallelMPI.ParallelMPI Pa):
-        return
-    cpdef stats_io(self, Grid.Grid Gr, ReferenceState.ReferenceState Ref,
-                   PrognosticVariables.PrognosticVariables PV, DiagnosticVariables.DiagnosticVariables DV,
-                   NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa):
-        return
-        
-        
 cdef class RadiationRRTM:
-    def __init__(self,grid):
+    def __init__(self,Grid.Grid Gr):
 
         self.lw_flux_down = np.zeros(Gr.dims.nlg[2],dtype=np.double,order='c')
         self.lw_flux_up = np.zeros(Gr.dims.nlg[2],dtype=np.double,order='c')
@@ -111,20 +98,20 @@ cdef class RadiationRRTM:
         
         # CGILS-specific: 
         self.ref_aloft = None
-        self.pressure_aloft = None
-        self.p0i_aloft = None
-        self.temperature_aloft = None
-        self.y_vapor_aloft = None
-        self.y_cond_aloft = None
-        self.cloud_fraction_aloft = None
+        #self.pressure_aloft = None
+        #self.p0i_aloft = None
+        #self.temperature_aloft = None
+        #self.y_vapor_aloft = None
+        #self.y_cond_aloft = None
+        #self.cloud_fraction_aloft = None
         
         # Test: 
-        self.p0i_ext = None
-        self.pressure_ext = None
-        self.temperature_ext = None
-        self.y_vapor_ext = None
-        self.y_cond_ext = None
-        self.cloud_fraction_ext = None
+        #self.p0i_ext = None
+        #self.pressure_ext = None
+        #self.temperature_ext = None
+        #self.y_vapor_ext = None
+        #self.y_cond_ext = None
+        #self.cloud_fraction_ext = None
         
         self.is_vapor  = None
         self.is_liquid = None
@@ -169,16 +156,15 @@ cdef class RadiationRRTM:
         self.tsfc_in_ext   = None
          
         self.debug_mode = None
-        self.n_ext = None
         
         return
         
-    def initialize(self,case_dict,Grid.Grid Gr, ReferenceState.ReferenceState Ref,
-                     NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pagrid,basicstate):
-                     #scalars,thermodynamics,io):
-    	cdef :
-        	Py_ssize_t gw = Gr.dims.gw
-        	
+    cpdef initialize(self,case_dict,Grid.Grid Gr, ReferenceState.ReferenceState Ref,
+                     NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa):
+        cdef :
+             Py_ssize_t gw = Gr.dims.gw
+             Py_ssize_t k
+        	 
         self.n_ext = 50
     
         try:
@@ -195,7 +181,10 @@ cdef class RadiationRRTM:
         self.cloud_fraction_aloft = np.zeros(self.n_ext ,dtype=np.double,order='F')
         
         if self.ref_aloft:
-            self.p0i_aloft[0] = Ref.p0_i_global_ghosted[grid.gw + Gr.dims.n[2]-1] # or ? extract_local_ghosted (fbrient)
+            #self.p0i_aloft[0] = basicstate.p0_i_global_ghosted[grid.gw + grid.nz-1]
+            #self.p0i_aloft[0] = Ref.p0_i_global_ghosted[Grid.gw + Gr.dims.n[2]-1] # or ? extract_local_ghosted (fbrient)
+            self.p0i_aloft[0] = Ref.p[Grid.gw + Gr.dims.n[2]-1] # or ? extract_local_ghosted (fbrient)
+
             for k in xrange(1,self.n_ext+1):
                 self.p0i_aloft[k] = self.p0i_aloft[k-1] - self.p0i_aloft[0]/self.n_ext
                 self.pressure_aloft[k-1] = (self.p0i_aloft[k] + self.p0i_aloft[k-1])*0.5
@@ -205,7 +194,7 @@ cdef class RadiationRRTM:
             try:
                 self.temperature_aloft = np.interp(self.pressure_aloft,p,case_dict['forcing']['t_ref'])
             except:
-                self.temperature_aloft = np.interp(self.pressure_aloft,p,case_dict['forcing']['thl_ref']*/exner(Ref.p0)#(p/basicstate.p00)**(Ra/cpa))
+                self.temperature_aloft = np.interp(self.pressure_aloft,p,case_dict['forcing']['thl_ref']*exner(Ref.p0))#(p/basicstate.p00)**(Ra/cpa))
             self.y_vapor_aloft = np.interp(self.pressure_aloft,p,case_dict['forcing']['yv_ref'])    
             
         else: # ADDED BY ZTAN FOR EXTENDED TEMPERATURE PROFILE BEYOND LES TOP, ONLY USED WHEN self.ref_aloft = False
@@ -232,7 +221,8 @@ cdef class RadiationRRTM:
         p0i         = Ref.p0_half
         self.pressure_ext  = np.zeros(Gr.dims.n[2] + self.n_ext   ,dtype=np.double,order='F')
         self.p0i_ext       = np.zeros(Gr.dims.n[2] + self.n_ext+1 ,dtype=np.double,order='F')       
-        
+        plev        = self.p0i_ext
+
         for k in xrange(Gr.dims.n[2] + self.n_ext):
             if k <= Gr.dims.n[2] :
                 self.p0i_ext[k] = p0i[gw + k-1]
@@ -247,7 +237,7 @@ cdef class RadiationRRTM:
                 self.pressure_ext[k] = (self.p0i_ext[k] + self.p0i_ext[k+1])*0.5     
 
         # Added: Initialize rrtmg_lw and rrtmg_sw
-        cdef double cpdair = np.float64(cp_ref)
+        cdef double cpdair = np.float64(cpm)
         c_rrtmg_lw_init(&cpdair)
         c_rrtmg_sw_init(&cpdair)
         
@@ -333,7 +323,9 @@ cdef class RadiationRRTM:
         
         # From rad_driver.f90, lines 585 to 620       
         trpath = np.zeros((Gr.dims.n[2] + self.n_ext+1,9),dtype=np.double,order='F')
-        plev   = self.p0i_ext/100.0
+        for k in xrange(Gr.dims.n[2] + self.n_ext):
+            plev[k]   = self.p0i_ext[k]/100.0
+            
         for i in xrange(1,Gr.dims.n[2] + self.n_ext+1):
             trpath[i,:] = trpath[i-1,:]
             if (plev[i-1] > lw_pressure[0]):
@@ -367,7 +359,9 @@ cdef class RadiationRRTM:
         else:
             # o3_trace, o3_pressure
             trpath_o3 = np.zeros(Gr.dims.n[2] + self.n_ext+1,dtype=np.double,order='F')
-            plev = self.p0i_ext/100.0
+            for k in xrange(Gr.dims.n[2] + self.n_ext):
+                plev[k]   = self.p0i_ext[k]/100.0
+                
             self.o3_np = o3_trace.shape[0]
             for i in xrange(1,Gr.dims.n[2] + self.n_ext+1):
                 trpath_o3[i] = trpath_o3[i-1]
@@ -452,7 +446,7 @@ cdef class RadiationRRTM:
 
         self.is_vapor  = True
         try:
-            type(thermodynamics.y_vapor)
+#            type(thermodynamics.y_vapor)
             print('RadiationFMS: Thermodynamics With Vapor')
         except:
             self.is_vapor = False
@@ -460,7 +454,7 @@ cdef class RadiationRRTM:
             
         self.is_liquid  = True
         try:
-            type(thermodynamics.y_liquid)
+#            type(thermodynamics.y_liquid)
             print('RadiationFMS: Thermodynamics With Liquid')
         except:
             self.is_liquid = False   
@@ -468,14 +462,17 @@ cdef class RadiationRRTM:
                      
         self.is_ice  = True
         try:
-            type(thermodynamics.y_ice)
+#            type(thermodynamics.y_ice)
             print('RadiationFMS: Thermodynamics With Ice')
         except:
             self.is_ice = False
             print('RadiationFMS: Thermodynamics WithOUT Ice')
             
         #Initialize statistical output file
-        self.init_output(grid, io)
+#        self.init_output(Grid, io)
+        
+    cpdef stats_io(self,Grid.Grid Gr, ReferenceState.ReferenceState Ref,
+                     NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa):
             
         return            
             
