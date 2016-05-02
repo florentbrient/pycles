@@ -912,6 +912,8 @@ cdef class ForcingCGILS:
 
 
 
+
+
 cdef coriolis_force(Grid.DimStruct *dims, double *u, double *v, double *ut, double *vt, double *ug, double *vg, double coriolis_param, double u0, double v0 ):
 
     cdef:
@@ -994,4 +996,5 @@ cdef apply_subsidence(Grid.DimStruct *dims, double *rho0, double *rho0_half, dou
                     tendencies[ijk] -= (values[ijk+1] - values[ijk]) * dxi * subsidence[k]
 
     return
+
 

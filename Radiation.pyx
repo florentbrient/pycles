@@ -12,7 +12,7 @@ from NetCDFIO cimport NetCDFIO_Stats
 cimport ParallelMPI
 cimport TimeStepping
 cimport Surface
-import pylab as plt
+# import pylab as plt
 import numpy as np
 cimport numpy as np
 import netCDF4 as nc
@@ -563,17 +563,17 @@ cdef class RadiationRRTM(RadiationBase):
             qv_pencils[0,i] = qv_pencils[0, i]/ (1.0 - qv_pencils[0, i])
         #
         # Plotting to evaluate implementation of buffer zone
-        plt.figure(1)
-        plt.plot(self.rv_ext,self.p_ext,'or')
-        plt.plot(vapor_mixing_ratios, pressures)
-        plt.plot(qv_pencils[0,:], Ref.p0_half_global[gw:-gw],'ob')
-        plt.gca().invert_yaxis()
-        plt.figure(2)
-        plt.plot(self.t_ext,self.p_ext,'-or')
-        plt.plot(temperatures,pressures)
-        plt.plot(t_pencils[0,:], Ref.p0_half_global[gw:-gw],'-ob')
-        plt.gca().invert_yaxis()
-        plt.show()
+        # plt.figure(1)
+        # plt.plot(self.rv_ext,self.p_ext,'or')
+        # plt.plot(vapor_mixing_ratios, pressures)
+        # plt.plot(qv_pencils[0,:], Ref.p0_half_global[gw:-gw],'ob')
+        # plt.gca().invert_yaxis()
+        # plt.figure(2)
+        # plt.plot(self.t_ext,self.p_ext,'-or')
+        # plt.plot(temperatures,pressures)
+        # plt.plot(t_pencils[0,:], Ref.p0_half_global[gw:-gw],'-ob')
+        # plt.gca().invert_yaxis()
+        # plt.show()
         #---END Plotting to evaluate implementation of buffer zone
 
         self.p_full = np.zeros((self.n_ext+nz,), dtype=np.double)
@@ -944,10 +944,10 @@ cdef class RadiationRRTM(RadiationBase):
         #----BEGIN Plotting to test implementation of buffer zone
         #---Comment out when not running locally
         # Plot to verify no kink is present at top of LES domain
-        plt.figure(6)
-        plt.plot(heating_rate_pencil[0,:], play_in[0,0:nz])
-        plt.gca().invert_yaxis()
-        plt.show()
+        # plt.figure(6)
+        # plt.plot(heating_rate_pencil[0,:], play_in[0,0:nz])
+        # plt.gca().invert_yaxis()
+        # plt.show()
         #---END plotting
 
         self.z_pencil.reverse_double(&Gr.dims, Pa, heating_rate_pencil, &self.heating_rate[0])

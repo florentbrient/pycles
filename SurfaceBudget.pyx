@@ -22,8 +22,6 @@ import cython
 def SurfaceBudgetFactory(namelist):
     if namelist['meta']['casename'] == 'ZGILS':
         return SurfaceBudget(namelist)
-    elif namelist['meta']['casename'] == 'CGILS':
-        return SurfaceBudget(namelist)
     else:
         return SurfaceBudgetNone()
 
