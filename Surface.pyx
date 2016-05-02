@@ -50,13 +50,9 @@ def SurfaceFactory(namelist, LatentHeat LH, ParallelMPI.ParallelMPI Par):
         if casename == 'SullivanPatton':
            return SurfaceSullivanPatton(LH)
         elif casename == 'Bomex':
-<<<<<<< HEAD
-            self.scheme = SurfaceBomex()
-        elif casename == 'VARF':
-            self.scheme = SurfaceVARF(namelist)
-=======
             return SurfaceBomex(LH)
->>>>>>> upstream/cgils
+        elif casename == 'VARF':
+            return SurfaceVARF(namelist)
         elif casename == 'Gabls':
             return SurfaceGabls(namelist,LH)
         elif casename == 'DYCOMS_RF01':
@@ -64,15 +60,11 @@ def SurfaceFactory(namelist, LatentHeat LH, ParallelMPI.ParallelMPI Par):
         elif casename == 'DYCOMS_RF02':
             return SurfaceDYCOMS_RF02(namelist, LH)
         elif casename == 'Rico':
-<<<<<<< HEAD
-            self.scheme= SurfaceRico()
-        elif casename == 'VARRico':
-            self.scheme= SurfaceVARRico(namelist)
-=======
             return SurfaceRico(LH)
+        elif casename == 'VARRico':
+            return SurfaceVARRico(namelist)
         elif casename == 'CGILS':
             return SurfaceCGILS(namelist, LH, Par)
->>>>>>> upstream/cgils
         else:
             return SurfaceNone()
 
@@ -372,7 +364,6 @@ cdef class SurfaceBomex(SurfaceBase):
         return
 
 
-<<<<<<< HEAD
 cdef class SurfaceVARF:
     def __init__(self,namelist):
         self.theta_flux    = namelist['thermo']['theta_flux'] # K m/s
@@ -476,12 +467,12 @@ cdef class SurfaceVARF:
         
 
 
-cdef class SurfaceGabls:
-    def __init__(self, namelist):
-=======
+#cdef class SurfaceGabls:
+#    def __init__(self, namelist):
+#=======
 cdef class SurfaceGabls(SurfaceBase):
     def __init__(self, namelist,  LatentHeat LH):
->>>>>>> upstream/cgils
+#>>>>>>> upstream/cgils
         self.gustiness = 0.001
         self.z0 = 0.1
         # Rate of change of surface temperature, in K/hour

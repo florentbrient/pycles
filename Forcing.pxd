@@ -108,8 +108,6 @@ cdef class ForcingRico:
     cpdef stats_io(self, Grid.Grid Gr, ReferenceState.ReferenceState Ref,
                  PrognosticVariables.PrognosticVariables PV, DiagnosticVariables.DiagnosticVariables DV,
                    NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa)
-<<<<<<< HEAD
-=======
 
 
 cdef class ForcingCGILS:
@@ -127,4 +125,3 @@ cdef class ForcingCGILS:
     cpdef stats_io(self, Grid.Grid Gr, ReferenceState.ReferenceState Ref,
                  PrognosticVariables.PrognosticVariables PV, DiagnosticVariables.DiagnosticVariables DV,
                    NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa)
->>>>>>> upstream/cgils

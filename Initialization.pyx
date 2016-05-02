@@ -41,15 +41,10 @@ def InitializationFactory(namelist):
             return InitSmoke
         elif casename == 'Rico':
             return InitRico
-<<<<<<< HEAD
         elif casename == 'VARRico':
             return InitRico
-=======
         elif casename == 'CGILS':
             return  InitCGILS
-
-
->>>>>>> upstream/cgils
         else:
             pass
 
@@ -352,7 +347,6 @@ def InitBomex(namelist,Grid.Grid Gr,PrognosticVariables.PrognosticVariables PV,
 
     return
 
-<<<<<<< HEAD
     
 def InitVARF(Grid.Grid Gr,PrognosticVariables.PrognosticVariables PV,
                        ReferenceState.ReferenceState RS, Th, NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa ):
@@ -457,10 +451,9 @@ def InitVARF(Grid.Grid Gr,PrognosticVariables.PrognosticVariables PV,
 
     return
 
-def InitGabls(Grid.Grid Gr, PrognosticVariables.PrognosticVariables PV,
-=======
+#def InitGabls(Grid.Grid Gr, PrognosticVariables.PrognosticVariables PV,
+#======= upstream
 def InitGabls(namelist,Grid.Grid Gr, PrognosticVariables.PrognosticVariables PV,
->>>>>>> upstream/cgils
                        ReferenceState.ReferenceState RS, Th, NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa ):
 
     #Generate the reference profiles

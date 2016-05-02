@@ -68,7 +68,6 @@ cdef class SurfaceBomex(SurfaceBase):
     cpdef stats_io(self, Grid.Grid Gr, NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa)
 
 
-<<<<<<< HEAD
 cdef class SurfaceVARF:
     cdef:
         double theta_flux
@@ -87,10 +86,10 @@ cdef class SurfaceVARF:
     cpdef stats_io(self, Grid.Grid Gr, NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa)
 
 
-cdef class SurfaceGabls:
-=======
+#cdef class SurfaceGabls:
+#=======
 cdef class SurfaceGabls(SurfaceBase):
->>>>>>> upstream/cgils
+#>>>>>>> upstream/cgils
     cdef:
         double gustiness
         double z0
@@ -136,7 +135,6 @@ cdef class SurfaceDYCOMS_RF02(SurfaceBase):
                  DiagnosticVariables.DiagnosticVariables DV,ParallelMPI.ParallelMPI Pa, TimeStepping.TimeStepping TS)
     cpdef stats_io(self, Grid.Grid Gr, NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa)
 
-<<<<<<< HEAD
 cdef class SurfaceVARRico:
     cdef:
         double cm
@@ -155,10 +153,10 @@ cdef class SurfaceVARRico:
     cpdef stats_io(self, Grid.Grid Gr, NetCDFIO_Stats NS, ParallelMPI.ParallelMPI Pa)
 
 
-cdef class SurfaceRico:
-=======
+#cdef class SurfaceRico:
+#=======
 cdef class SurfaceRico(SurfaceBase):
->>>>>>> upstream/cgils
+#>>>>>>> upstream/cgils
     cdef:
         double cm
         double ch

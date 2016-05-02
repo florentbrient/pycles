@@ -3,12 +3,9 @@ import json
 import pprint
 from sys import exit
 import uuid
-<<<<<<< HEAD
 #florent
-=======
 import ast
 
->>>>>>> upstream/cgils
 
 def main():
     parser = argparse.ArgumentParser(prog='Namelist Generator')
@@ -46,17 +43,14 @@ def main():
         namelist = SMOKE()
     elif case_name == 'Rico':
         namelist = Rico()
-<<<<<<< HEAD
     elif case_name == 'VARRico':
         namelist = VARRico()
-=======
     elif case_name == 'CGILS_S6':
         namelist = CGILS_S6(is_p2, is_ctl_omega)
     elif case_name == 'CGILS_S11':
         namelist = CGILS_S11(is_p2, is_ctl_omega)
     elif case_name == 'CGILS_S12':
         namelist = CGILS_S12(is_p2, is_ctl_omega)
->>>>>>> upstream/cgils
     else:
         print('Not a vaild case name')
         exit()
