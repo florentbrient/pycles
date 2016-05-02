@@ -47,9 +47,6 @@ cdef class ReferenceState:
         :return:
         '''
 
-
-
-
         self.sg = Thermodynamics.entropy(self.Pg, self.Tg, self.qtg, 0.0, 0.0)
 
         # Form a right hand side for integrating the hydrostatic equation to
@@ -204,4 +201,5 @@ cdef class ReferenceState:
 
 
         return
+
 
