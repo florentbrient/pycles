@@ -26,7 +26,6 @@ cimport VisualizationOutput
 cimport Surface
 cimport Forcing
 cimport Radiation
-cimport Radiation_RRTM
 cimport Restart
 
 class Simulation3d:
@@ -53,7 +52,6 @@ class Simulation3d:
         self.Sur = Surface.Surface(namelist, self.LH, self.Pa)
         self.Fo = Forcing.Forcing(namelist, self.Pa)
         self.Ra  = Radiation.Radiation(namelist, self.Pa)
-        self.Ra2 = Radiation_RRTM.Radiation_RRTM(namelist, self.Pa)
         self.StatsIO = NetCDFIO.NetCDFIO_Stats()
         self.FieldsIO = NetCDFIO.NetCDFIO_Fields()
         self.CondStatsIO = NetCDFIO.NetCDFIO_CondStats()
