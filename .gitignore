@@ -1,7 +1,6 @@
 .DS_Store
 *.pkl
 *.pyc
-*.nc
 *.so
 *.o
 *.c
@@ -10,6 +9,7 @@ Csrc/parameters.h
 *.idea
 *.in
 build/
+*.txt
 figs/
 _static/
 _templates/

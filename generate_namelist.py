@@ -3,14 +3,28 @@ import json
 import pprint
 from sys import exit
 import uuid
+<<<<<<< HEAD
 #florent
+=======
+import ast
+
+>>>>>>> upstream/cgils
 
 def main():
     parser = argparse.ArgumentParser(prog='Namelist Generator')
     parser.add_argument('case_name')
+    # Optional Arguments for CGILS
+    parser.add_argument('--perturbed_temperature', default='False',
+                        help='Specify if perturbed temperature case is to be run (CGILS/ZGILS) as True/False')
+    parser.add_argument('--control_subsidence', default='False',
+                        help='Specify if control subsidence is to be used in perturbed runs (CGILS/ZGILS) as True/False')
     args = parser.parse_args()
 
     case_name = args.case_name
+
+    #Optional Arguments for CGILS
+    is_p2 = ast.literal_eval(args.perturbed_temperature)
+    is_ctl_omega = ast.literal_eval(args.control_subsidence)
 
     if case_name == 'StableBubble':
         namelist = StableBubble()
@@ -32,8 +46,17 @@ def main():
         namelist = SMOKE()
     elif case_name == 'Rico':
         namelist = Rico()
+<<<<<<< HEAD
     elif case_name == 'VARRico':
         namelist = VARRico()
+=======
+    elif case_name == 'CGILS_S6':
+        namelist = CGILS_S6(is_p2, is_ctl_omega)
+    elif case_name == 'CGILS_S11':
+        namelist = CGILS_S11(is_p2, is_ctl_omega)
+    elif case_name == 'CGILS_S12':
+        namelist = CGILS_S12(is_p2, is_ctl_omega)
+>>>>>>> upstream/cgils
     else:
         print('Not a vaild case name')
         exit()
@@ -990,6 +1013,343 @@ def VARRico():
 
     return namelist
 
+
+
+
+
+def CGILS_S6(is_p2,is_ctl_omega):
+
+    namelist = {}
+
+    namelist['grid'] = {}
+    namelist['grid']['dims'] = 3
+    namelist['grid']['nx'] = 96
+    namelist['grid']['ny'] = 96
+    namelist['grid']['nz'] = 180
+    namelist['grid']['gw'] = 4
+    namelist['grid']['dx'] = 100.0
+    namelist['grid']['dy'] = 100.0
+    namelist['grid']['dz'] = 30.0
+
+    namelist['mpi'] = {}
+    namelist['mpi']['nprocx'] = 1
+    namelist['mpi']['nprocy'] = 1
+    namelist['mpi']['nprocz'] = 1
+
+    namelist['time_stepping'] = {}
+    namelist['time_stepping']['ts_type'] = 3
+    namelist['time_stepping']['cfl_limit'] = 0.7
+    namelist['time_stepping']['dt_initial'] = 1.0
+    namelist['time_stepping']['dt_max'] = 10.0
+    namelist['time_stepping']['t_max'] = 3600.0*24.0*10.0 # 10 days
+
+    namelist['thermodynamics'] = {}
+    namelist['thermodynamics']['latentheat'] = 'variable'
+
+    namelist['microphysics'] = {}
+    namelist['microphysics']['phase_partitioning'] = 'liquid_only'
+    namelist['microphysics']['cloud_sedimentation'] = True
+    namelist['microphysics']['ccn'] = 100.0e6
+    namelist['microphysics']['scheme'] = 'SB_Liquid'
+    namelist['microphysics']['SB_Liquid'] = {}
+
+    namelist['microphysics']['SB_Liquid']['nu_droplet'] = 0
+    namelist['microphysics']['SB_Liquid']['mu_rain'] = 1
+
+    namelist['radiation']={}
+    namelist['radiation']['RRTM'] = {}
+    namelist['radiation']['RRTM']['buffer_points'] = 1
+    namelist['radiation']['RRTM']['stretch_factor'] = 1.0
+    namelist['radiation']['RRTM']['frequency'] = 60.0
+
+
+
+    namelist['sgs'] = {}
+    namelist['sgs']['scheme'] = 'Smagorinsky'
+
+    namelist['diffusion'] = {}
+    namelist['diffusion']['qt_entropy_source'] = False
+
+    namelist['momentum_transport'] = {}
+    namelist['momentum_transport']['order'] = 7
+
+    namelist['scalar_transport'] = {}
+    namelist['scalar_transport']['order'] = 7
+    namelist['scalar_transport']['order_sedimentation'] = 1
+
+    namelist['damping'] = {}
+    namelist['damping']['scheme'] = 'NudgeCGILS'
+
+
+    namelist['output'] = {}
+    namelist['output']['output_root'] = './'
+
+    namelist['stats_io'] = {}
+    namelist['stats_io']['stats_dir'] = 'stats'
+    namelist['stats_io']['auxiliary'] = ['Cumulus']
+    namelist['stats_io']['frequency'] = 5 * 60.0
+
+    namelist['fields_io'] = {}
+    namelist['fields_io']['fields_dir'] = 'fields'
+    namelist['fields_io']['frequency'] = 86400.0
+    namelist['fields_io']['diagnostic_fields'] = ['ql','temperature','buoyancy']
+
+    namelist['meta'] = {}
+    namelist['meta']['CGILS'] = {}
+    namelist['meta']['casename'] = 'CGILS'
+    namelist['meta']['CGILS']['location'] = 6
+    namelist['meta']['CGILS']['P2'] = is_p2
+    namelist['meta']['CGILS']['CTL_omega'] = is_ctl_omega
+
+    simname = 'CGILS_S' + str(namelist['meta']['CGILS']['location'] )
+    if namelist['meta']['CGILS']['P2']:
+        if namelist['meta']['CGILS']['CTL_omega']:
+            simname += '_P2'
+        else:
+            simname += '_P2S'
+    else:
+        simname += '_CTL'
+    namelist['meta']['simname'] = simname
+
+
+
+    namelist['restart'] = {}
+    namelist['restart']['output'] = True
+    namelist['restart']['init_from'] = False
+    namelist['restart']['input_path'] = './'
+    namelist['restart']['frequency'] = 600.0
+    namelist['restart']['deleted_old'] = True
+    namelist['restart']['times_retained'] = range(86400, 86400*11, 86400)
+
+    namelist['conditional_stats'] ={}
+    namelist['conditional_stats']['classes'] = ['Spectra']
+    namelist['conditional_stats']['frequency'] = 43200.0
+    namelist['conditional_stats']['stats_dir'] = 'cond_stats'
+
+
+    return namelist
+
+
+
+
+
+
+
+def CGILS_S11(is_p2,is_ctl_omega):
+
+    namelist = {}
+
+    namelist['grid'] = {}
+    namelist['grid']['dims'] = 3
+    namelist['grid']['nx'] = 96
+    namelist['grid']['ny'] = 96
+    namelist['grid']['nz'] = 200
+    namelist['grid']['gw'] = 4
+    namelist['grid']['dx'] = 50.0
+    namelist['grid']['dy'] = 50.0
+    namelist['grid']['dz'] = 20.0
+
+    namelist['mpi'] = {}
+    namelist['mpi']['nprocx'] = 1
+    namelist['mpi']['nprocy'] = 1
+    namelist['mpi']['nprocz'] = 1
+
+    namelist['time_stepping'] = {}
+    namelist['time_stepping']['ts_type'] = 3
+    namelist['time_stepping']['cfl_limit'] = 0.7
+    namelist['time_stepping']['dt_initial'] = 1.0
+    namelist['time_stepping']['dt_max'] = 10.0
+    namelist['time_stepping']['t_max'] = 3600.0*24.0*10.0 # 10 days
+
+    namelist['thermodynamics'] = {}
+    namelist['thermodynamics']['latentheat'] = 'variable'
+
+    namelist['microphysics'] = {}
+    namelist['microphysics']['phase_partitioning'] = 'liquid_only'
+    namelist['microphysics']['cloud_sedimentation'] = True
+    namelist['microphysics']['ccn'] = 100.0e6
+    namelist['microphysics']['scheme'] = 'SB_Liquid'
+    namelist['microphysics']['SB_Liquid'] = {}
+
+    namelist['microphysics']['SB_Liquid']['nu_droplet'] = 0
+    namelist['microphysics']['SB_Liquid']['mu_rain'] = 1
+
+
+
+    namelist['sgs'] = {}
+    namelist['sgs']['scheme'] = 'Smagorinsky'
+
+    namelist['diffusion'] = {}
+    namelist['diffusion']['qt_entropy_source'] = False
+
+    namelist['momentum_transport'] = {}
+    namelist['momentum_transport']['order'] = 7
+
+    namelist['scalar_transport'] = {}
+    namelist['scalar_transport']['order'] = 7
+    namelist['scalar_transport']['order_sedimentation'] = 1
+
+    namelist['damping'] = {}
+    namelist['damping']['scheme'] = 'NudgeCGILS'
+
+
+    namelist['output'] = {}
+    namelist['output']['output_root'] = './'
+
+    namelist['stats_io'] = {}
+    namelist['stats_io']['stats_dir'] = 'stats'
+    namelist['stats_io']['auxiliary'] = ['Flux']
+    namelist['stats_io']['frequency'] = 5 * 60.0
+
+    namelist['fields_io'] = {}
+    namelist['fields_io']['fields_dir'] = 'fields'
+    namelist['fields_io']['frequency'] = 86400.0
+    namelist['fields_io']['diagnostic_fields'] = ['ql','temperature','buoyancy']
+
+    namelist['meta'] = {}
+    namelist['meta']['CGILS'] = {}
+    namelist['meta']['casename'] = 'CGILS'
+    namelist['meta']['CGILS']['location'] = 11
+    namelist['meta']['CGILS']['P2'] = is_p2
+    namelist['meta']['CGILS']['CTL_omega'] = is_ctl_omega
+
+    simname = 'CGILS_S' + str(namelist['meta']['CGILS']['location'] )
+    if namelist['meta']['CGILS']['P2']:
+        if namelist['meta']['CGILS']['CTL_omega']:
+            simname += '_P2'
+        else:
+            simname += '_P2S'
+    else:
+        simname += '_CTL'
+    namelist['meta']['simname'] = simname
+
+
+
+    namelist['restart'] = {}
+    namelist['restart']['output'] = True
+    namelist['restart']['init_from'] = False
+    namelist['restart']['input_path'] = './'
+    namelist['restart']['frequency'] = 600.0
+    namelist['restart']['deleted_old'] = True
+    namelist['restart']['times_retained'] = range(86400, 86400*11, 86400)
+
+    namelist['conditional_stats'] ={}
+    namelist['conditional_stats']['classes'] = ['Spectra']
+    namelist['conditional_stats']['frequency'] = 43200.0
+    namelist['conditional_stats']['stats_dir'] = 'cond_stats'
+
+
+    return namelist
+
+
+
+
+
+def CGILS_S12(is_p2,is_ctl_omega):
+
+    namelist = {}
+
+    namelist['grid'] = {}
+    namelist['grid']['dims'] = 3
+    namelist['grid']['nx'] = 96
+    namelist['grid']['ny'] = 96
+    namelist['grid']['nz'] = 200
+    namelist['grid']['gw'] = 4
+    namelist['grid']['dx'] = 25.0
+    namelist['grid']['dy'] = 25.0
+    namelist['grid']['dz'] = 12.0
+
+    namelist['mpi'] = {}
+    namelist['mpi']['nprocx'] = 1
+    namelist['mpi']['nprocy'] = 1
+    namelist['mpi']['nprocz'] = 1
+
+    namelist['time_stepping'] = {}
+    namelist['time_stepping']['ts_type'] = 3
+    namelist['time_stepping']['cfl_limit'] = 0.7
+    namelist['time_stepping']['dt_initial'] = 1.0
+    namelist['time_stepping']['dt_max'] = 10.0
+    namelist['time_stepping']['t_max'] = 3600.0*24.0*10.0 # 10 days
+
+    namelist['thermodynamics'] = {}
+    namelist['thermodynamics']['latentheat'] = 'variable'
+
+    namelist['microphysics'] = {}
+    namelist['microphysics']['phase_partitioning'] = 'liquid_only'
+    namelist['microphysics']['cloud_sedimentation'] = True
+    namelist['microphysics']['ccn'] = 100.0e6
+    namelist['microphysics']['scheme'] = 'SB_Liquid'
+    namelist['microphysics']['SB_Liquid'] = {}
+
+    namelist['microphysics']['SB_Liquid']['nu_droplet'] = 0
+    namelist['microphysics']['SB_Liquid']['mu_rain'] = 1
+
+
+
+    namelist['sgs'] = {}
+    namelist['sgs']['scheme'] = 'Smagorinsky'
+
+    namelist['diffusion'] = {}
+    namelist['diffusion']['qt_entropy_source'] = False
+
+    namelist['momentum_transport'] = {}
+    namelist['momentum_transport']['order'] = 7
+
+    namelist['scalar_transport'] = {}
+    namelist['scalar_transport']['order'] = 7
+    namelist['scalar_transport']['order_sedimentation'] = 1
+
+    namelist['damping'] = {}
+    namelist['damping']['scheme'] = 'NudgeCGILS'
+
+
+    namelist['output'] = {}
+    namelist['output']['output_root'] = './'
+
+    namelist['stats_io'] = {}
+    namelist['stats_io']['stats_dir'] = 'stats'
+    namelist['stats_io']['auxiliary'] = ['Flux']
+    namelist['stats_io']['frequency'] = 5 * 60.0
+
+    namelist['fields_io'] = {}
+    namelist['fields_io']['fields_dir'] = 'fields'
+    namelist['fields_io']['frequency'] = 86400.0
+    namelist['fields_io']['diagnostic_fields'] = ['ql','temperature','buoyancy']
+
+    namelist['meta'] = {}
+    namelist['meta']['CGILS'] = {}
+    namelist['meta']['casename'] = 'CGILS'
+    namelist['meta']['CGILS']['location'] = 12
+    namelist['meta']['CGILS']['P2'] = is_p2
+    namelist['meta']['CGILS']['CTL_omega'] = is_ctl_omega
+
+    simname = 'CGILS_S' + str(namelist['meta']['CGILS']['location'] )
+    if namelist['meta']['CGILS']['P2']:
+        if namelist['meta']['CGILS']['CTL_omega']:
+            simname += '_P2'
+        else:
+            simname += '_P2S'
+    else:
+        simname += '_CTL'
+    namelist['meta']['simname'] = simname
+
+
+
+    namelist['restart'] = {}
+    namelist['restart']['output'] = True
+    namelist['restart']['init_from'] = False
+    namelist['restart']['input_path'] = './'
+    namelist['restart']['frequency'] = 600.0
+    namelist['restart']['deleted_old'] = True
+    namelist['restart']['times_retained'] = range(86400, 86400*11, 86400)
+
+    namelist['conditional_stats'] ={}
+    namelist['conditional_stats']['classes'] = ['Spectra']
+    namelist['conditional_stats']['frequency'] = 43200.0
+    namelist['conditional_stats']['stats_dir'] = 'cond_stats'
+
+
+    return namelist
 
 
 def write_file(namelist):
